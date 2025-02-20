@@ -1,34 +1,33 @@
 import { useState } from "react";
 import "./App.css";
+import { Todo } from './Todo'; // Importando o componente Todo
 
 type TodoItem = {
     id: number;
     text: string;
-    isCompleted: boolean;
+    completed: boolean; // Usando 'completed'
 };
 
 function App() {
     const [todos, setTodos] = useState<TodoItem[]>([]);
     const [input, setInput] = useState("");
 
-    // Função para adicionar tarefa
     const addTodo = (text: string) => {
         if (!text.trim()) return;
 
         const newTodo: TodoItem = {
             id: Date.now(),
             text,
-            isCompleted: false,
+            completed: false, // Usando 'completed'
         };
 
         setTodos([...todos, newTodo]);
         setInput(""); 
     };
 
-
     const toggleTodo = (id: number) => {
         setTodos(todos.map(todo => 
-            todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo // Usando 'completed'
         ));
     };
 
@@ -45,13 +44,11 @@ function App() {
 
             <ul>
                 {todos.map(todo => (
-                    <li
+                    <Todo 
                         key={todo.id}
-                        style={{ textDecoration: todo.isCompleted ? "line-through" : "none", cursor: "pointer" }}
-                        onClick={() => toggleTodo(todo.id)}
-                    >
-                        {todo.text}
-                    </li>
+                        todo={todo}
+                        toggleTodo={toggleTodo}
+                    />
                 ))}
             </ul>
         </div>
