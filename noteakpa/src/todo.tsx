@@ -13,10 +13,28 @@ type TodoProps = {
 export const Todo: React.FC<TodoProps> = ({ todo, toggleTodo, removeTodo }) => {
     return (
         <li className={todo.completed ? "completed" : ""}>
-            <span onClick={() => toggleTodo(todo.id)}>
+            <span
+                onClick={() => toggleTodo(todo.id)}
+                style={{
+                    cursor: "pointer",
+                    textDecoration: todo.completed ? "line-through" : "none",
+                    color: todo.completed ? "#aaa" : "#333",
+                }}
+            >
                 {todo.completed ? "✅ " : "⬜ "} {todo.text}
             </span>
-            <button onClick={() => removeTodo(todo.id)}>❌</button>
+            <button
+                onClick={() => removeTodo(todo.id)}
+                style={{
+                    background: "none",
+                    border: "none",
+                    color: "#f44336",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                }}
+            >
+                ❌
+            </button>
         </li>
     );
 };

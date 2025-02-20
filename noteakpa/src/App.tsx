@@ -66,6 +66,7 @@ function App() {
 
         setNoteInput("");
     };
+    
 
     const removeNote = (id: number) => {
         fetch(`http://localhost:5000/notes/${id}`, {
