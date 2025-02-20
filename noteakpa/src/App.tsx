@@ -8,12 +8,19 @@ type TodoItem = {
     completed: boolean;
 };
 
+type NoteItem = {
+    id: number;
+    text: string;
+};
+
 function App() {
     const [todos, setTodos] = useState<TodoItem[]>([]);
+    const [notes, setNotes] = useState<NoteItem[]>([]);
     const [input, setInput] = useState("");
+    const [noteInput, setNoteInput] = useState("");
 
-    // Carregar tarefas do localStorage ao iniciar
     useEffect(() => {
+        // Carregar tarefas do localStorage ao iniciar
         try {
             const savedTodos = localStorage.getItem("todos");
             if (savedTodos) {
@@ -22,14 +29,13 @@ function App() {
         } catch (error) {
             console.error("Erro ao carregar tarefas do localStorage", error);
         }
-    }, []);
 
-    // Salvar tarefas no localStorage sempre que houver uma mudança
-    useEffect(() => {
-        if (todos.length > 0) {
-            localStorage.setItem("todos", JSON.stringify(todos));
-        }
-    }, [todos]);
+        // Carregar notas do servidor
+        fetch("http://localhost:5000/notes")
+            .then((res) => res.json())
+            .then((data) => setNotes(data))
+            .catch((err) => console.error("Erro ao carregar notas:", err));
+    }, []);
 
     const addTodo = (text: string) => {
         if (!text.trim()) return;
@@ -40,20 +46,33 @@ function App() {
             completed: false,
         };
 
-        setTodos(prevTodos => [...prevTodos, newTodo]);
+        setTodos((prevTodos) => [...prevTodos, newTodo]);
         setInput("");
     };
 
-    const toggleTodo = (id: number) => {
-        setTodos(prevTodos =>
-            prevTodos.map(todo =>
-                todo.id === id ? { ...todo, completed: !todo.completed } : todo
-            )
-        );
+    const addNote = (text: string) => {
+        if (!text.trim()) return;
+
+        fetch("http://localhost:5000/notes", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ text }),
+        })
+            .then((res) => res.json())
+            .then((newNote) => setNotes((prevNotes) => [...prevNotes, newNote]))
+            .catch((err) => console.error("Erro ao adicionar nota:", err));
+
+        setNoteInput("");
     };
 
-    const removeTodo = (id: number) => {
-        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+    const removeNote = (id: number) => {
+        fetch(`http://localhost:5000/notes/${id}`, {
+            method: "DELETE",
+        })
+            .then(() => setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id)))
+            .catch((err) => console.error("Erro ao excluir nota:", err));
     };
 
     return (
@@ -70,13 +89,33 @@ function App() {
             </div>
 
             <ul>
-                {todos.map(todo => (
-                    <Todo 
+                {todos.map((todo) => (
+                    <Todo
                         key={todo.id}
                         todo={todo}
-                        toggleTodo={toggleTodo}
-                        removeTodo={removeTodo}
+                        toggleTodo={() => {}}
+                        removeTodo={() => {}}
                     />
+                ))}
+            </ul>
+
+            <h2>Notas</h2>
+            <div>
+                <input
+                    type="text"
+                    value={noteInput}
+                    onChange={(e) => setNoteInput(e.target.value)}
+                    placeholder="Digite uma nota"
+                />
+                <button onClick={() => addNote(noteInput)}>Adicionar Nota</button>
+            </div>
+
+            <ul>
+                {notes.map((note) => (
+                    <li key={note.id}>
+                        {note.text}{" "}
+                        <button onClick={() => removeNote(note.id)}>❌</button>
+                    </li>
                 ))}
             </ul>
         </div>
