@@ -1,18 +1,22 @@
-import React from 'react';
-import { TodoItem as TodoItemType } from './types'
+import React from "react";
 
-type Props = {
-    todo: TodoItemType;
+type TodoProps = {
+    todo: {
+        id: number;
+        text: string;
+        completed: boolean;
+    };
     toggleTodo: (id: number) => void;
+    removeTodo: (id: number) => void;
 };
 
-export const Todo: React.FC<Props> = ({ todo, toggleTodo }) => {
+export const Todo: React.FC<TodoProps> = ({ todo, toggleTodo, removeTodo }) => {
     return (
-        <li 
-            onClick={() => toggleTodo(todo.id)} 
-            style={{ textDecoration: todo.completed ? "line-through" : "none", cursor: "pointer" }}
-        >
-            {todo.text}
+        <li className={todo.completed ? "completed" : ""}>
+            <span onClick={() => toggleTodo(todo.id)}>
+                {todo.completed ? "✅ " : "⬜ "} {todo.text}
+            </span>
+            <button onClick={() => removeTodo(todo.id)}>❌</button>
         </li>
     );
 };
