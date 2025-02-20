@@ -60,6 +60,31 @@ app.delete("/todos/:id", (req, res) => {
     stmt.finalize();
 });
 
+// API para excluir uma nota
+app.delete("/notes/:id", (req, res) => {
+    const { id } = req.params;
+    const stmt = db.prepare("DELETE FROM notes WHERE id = ?");
+    stmt.run(id, function (err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.status(204).end();
+    });
+    stmt.finalize();
+});
+
+// Rota para buscar todas as notas
+app.get("/notes", (req, res) => {
+    db.all("SELECT * FROM notes", [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
+});
+
 // Iniciar o servidor na porta 5000
 app.listen(5000, () => {
     console.log("API rodando na porta 5000.");
