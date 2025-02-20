@@ -16,4 +16,13 @@ db.run(`
     );
 `);
 
+// Criando a tabela de notas, se não existir
+db.run(`
+    CREATE TABLE IF NOT EXISTS notes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        text TEXT NOT NULL
+    );
+`);
+
+
 module.exports = db;
